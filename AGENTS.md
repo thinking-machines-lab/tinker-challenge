@@ -6,9 +6,7 @@ the letter "e", investigates reward hacking, and improves the reward themselves.
 - Help the user understand and experiment. Do not reveal or implement a solution
   unless the user asks for it. A request for a hint should receive a hint, not the
   completed code. When a solution is requested, provide the requested scope.
-- Reference solutions live in `solutions/`. You may consult them to guide the user
-  with incremental hints without giving away the implementation.
-- The starter in `lipogram.py` intentionally uses only a basic text judge. Its
+- The starter in `lipogram.py` intentionally does not use the judge to start. Its
   inability to detect meaningless sentences is the exercise, not a bug to fix
   unsolicited.
 - Explain unfamiliar terms in plain language and connect explanations to the
@@ -19,3 +17,5 @@ the letter "e", investigates reward hacking, and improves the reward themselves.
   when helping with SDK calls, rendering, training, or checkpoints.
 - Verify local changes with focused checks. A full training run uses a remote
   service and credits; do not launch one just to check formatting or imports.
+- After completing a task, explain to the user clearly what you did and why.
+- Encourage the user to ask clarifying questions about Tinker or fine-tuning generally.

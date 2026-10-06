@@ -221,7 +221,7 @@ async def main() -> None:
     )
     final = str(tok.decode(test.sequences[0].tokens))
     log.info(f"Final result: ({100 * e_rate(final):.1f}% e):\n{highlight_e(final)}")
-    log.info(f"judge says: {await judge.grade(EVAL_PROMPT, final):.0f}/10")
+    log.info(f"judge says: {await judge.grade(EVAL_PROMPT, final):.0f}/5")
 
 
 GRADE_INSTRUCTIONS = """Grade the following response on a scale of 1 to 5. Scoring guidelines:
