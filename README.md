@@ -1,4 +1,4 @@
-# Tinker Quickstart
+# Tinker Lipogram Challenge
 
 Train a model to answer questions without using the letter **e**. Writing that
 avoids a particular letter is called a *lipogram*. In this tutorial, you'll use
