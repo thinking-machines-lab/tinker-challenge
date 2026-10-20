@@ -5,7 +5,7 @@ import os
 import random
 import re
 from collections.abc import Sequence
-from typing import cast
+from typing import Protocol, cast
 from urllib.parse import urlencode
 
 import matplotlib.pyplot as plt
@@ -50,11 +50,10 @@ def e_rate(text: str) -> float:
     return letters.count("e") / max(len(letters), 1)
 
 
-class Judge:
+class Judge(Protocol):
     """Grades an answer to a prompt from 1 (gibberish) to 5 (high quality)."""
 
-    async def grade(self, prompt: str, response: str) -> float:
-        raise NotImplementedError
+    async def grade(self, prompt: str, response: str) -> float: ...
 
 
 async def reward(prompt: str, text: str, judge: Judge) -> float:
@@ -84,6 +83,7 @@ async def main() -> None:
     )
     tok = train.get_tokenizer()
 
+    # convert a single question to tokens for the model in chat format
     def render(question: str) -> list[int]:
         return cast(
             list[int],
@@ -128,7 +128,15 @@ async def main() -> None:
                 for ptoks in prompt_toks
             ]
         )
-        texts = [[str(tok.decode(seq.tokens)) for seq in r.sequences] for r in results]
+        texts = [
+            [
+                str(tok.decode(seq.tokens, skip_special_tokens=True))
+                for seq in r.sequences
+            ]
+            for r in results
+        ]
+
+        # score each response in the group for each prompt
         grouped_rewards = await asyncio.gather(
             *[
                 asyncio.gather(*[reward(question, t, judge) for t in group])
@@ -136,6 +144,7 @@ async def main() -> None:
             ]
         )
 
+        # record some metrics for logging
         step_texts = [t for group in texts for t in group]
         step_rewards = [r for group in grouped_rewards for r in group]
         example = random.choice(step_texts)
@@ -219,7 +228,7 @@ async def main() -> None:
         num_samples=1,
         sampling_params=types.SamplingParams(max_tokens=MAX_TOKENS, temperature=0.7),
     )
-    final = str(tok.decode(test.sequences[0].tokens))
+    final = str(tok.decode(test.sequences[0].tokens, skip_special_tokens=True))
     log.info(f"Final result: ({100 * e_rate(final):.1f}% e):\n{highlight_e(final)}")
     log.info(f"judge says: {await judge.grade(EVAL_PROMPT, final):.0f}/5")
 
