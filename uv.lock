@@ -2182,17 +2182,17 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.5.2" },
     { name = "tinker", specifier = ">=0.29.1" },
     { name = "tinker-cookbook" },
-    { name = "tml-renderers", specifier = ">=0.1.0" },
+    { name = "tml-renderers", specifier = ">=0.2.0" },
 ]
 
 [[package]]
 name = "tml-renderers"
-version = "0.1.0"
+version = "0.4.1"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0d/b3/12b182a39effd1021263451e6eff0ff47c310f2957706a903ce838935dd5/tml_renderers-0.1.0-cp311-abi3-macosx_11_0_arm64.whl", hash = "sha256:f484e983fe42df95c5c69108c7ec4046340f416566f726bd76e211736db29391", size = 4387718, upload-time = "2026-07-15T17:24:15.468Z" },
-    { url = "https://files.pythonhosted.org/packages/d6/dd/c31bb2e874cb11a175f8f14967cee128b2d159507a602b3740152be6a8d6/tml_renderers-0.1.0-cp311-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:52cf4c1b4d1ab2664903f0438e661544546b4d7f0378fe245f53bafc01368014", size = 4545354, upload-time = "2026-07-15T17:24:17.956Z" },
-    { url = "https://files.pythonhosted.org/packages/26/e1/e4f8e7acfafaff35b59031b9af308aa059a845a4b094a43bd49dbb729508/tml_renderers-0.1.0-cp311-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6f5ff0b08ba5ffe92071cb32215d65cda88d92205850f9f4dd1823f5d0dc2aeb", size = 4686701, upload-time = "2026-07-15T17:24:20.486Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/0a/a0b64ddd13b0bfe315e74ceb3b3ad3850727175e5438497f037d9eaae1f5/tml_renderers-0.4.1-cp311-abi3-macosx_11_0_arm64.whl", hash = "sha256:3bfaab708bffa466177c3a46a7580dc72b949db6d0f1c4953aa6cbac700f862e", size = 16842184, upload-time = "2026-11-06T21:48:22.649Z" },
+    { url = "https://files.pythonhosted.org/packages/da/f2/db6814324ec609550122f5ee4cfea4816bad5493d1e2e8b4e2ff7cf91aa2/tml_renderers-0.4.1-cp311-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:930f73e4bf0b65ce6856538459fb761f3db2e930df9e42bd88fc0ede12be4168", size = 17032924, upload-time = "2026-11-06T21:48:25.451Z" },
+    { url = "https://files.pythonhosted.org/packages/dd/3b/f6c50eb2c0b132e80877065310a95f724a587f90d3a6a9ca1018e7584590/tml_renderers-0.4.1-cp311-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cc9d907a74c05c58590f32f7fdef523b9f6f96a41fb1a39c551af62aa36d67d8", size = 17254830, upload-time = "2026-11-06T21:48:28.723Z" },
 ]
 
 [[package]]

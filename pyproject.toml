@@ -8,7 +8,7 @@ dependencies = [
     "numpy>=2.5.2",
     "tinker>=0.29.1",
     "tinker-cookbook",
-    "tml-renderers>=0.1.0",
+    "tml-renderers>=0.2.0",
 ]
 
 
