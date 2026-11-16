@@ -98,7 +98,7 @@ async def main() -> None:
 
     judge = LlmJudge(
         await service.create_sampling_client_async(base_model=JUDGE_MODEL),
-        tokenizers.o200k_base_chat(),
+        tokenizers.O200kBaseChatTokenizer(),
     )
 
     save = await train.save_weights_for_sampler_async(
