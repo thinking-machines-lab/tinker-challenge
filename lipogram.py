@@ -78,7 +78,7 @@ async def main() -> None:
     plot_prefix = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     service = tinker.ServiceClient(user_metadata=user_metadata)
-    train = await service.create_lora_training_client_async(
+    train = await service.create_lora_training_client(
         base_model=BASE_MODEL, rank=LORA_RANK
     )
     tok = train.get_tokenizer()
@@ -97,14 +97,13 @@ async def main() -> None:
         )
 
     judge = LlmJudge(
-        await service.create_sampling_client_async(base_model=JUDGE_MODEL),
+        await service.create_sampling_client(base_model=JUDGE_MODEL),
         tokenizers.O200kBaseChatTokenizer(),
     )
 
-    save = await train.save_weights_for_sampler_async(
+    checkpoint = await train.save_weights_for_sampler(
         name="lipogram-000", ttl_seconds=7 * 24 * 3600
     )
-    checkpoint = await save.result_async()
     path = checkpoint.path
     log_checkpoint("lipogram-000", checkpoint, TRAINING_PROMPTS[0])
 
@@ -112,19 +111,19 @@ async def main() -> None:
     e_rates = []
 
     for step in range(TRAINING_STEPS):
-        sampler = await service.create_sampling_client_async(model_path=path)
+        sampler = await service.create_sampling_client(model_path=path)
         prompt_toks = [render(q) for q in TRAINING_PROMPTS]
 
         # sample GROUP_SIZE responses for each prompt in parallel
         results = await asyncio.gather(
             *[
-                sampler.sample_async(
+                sampler.sample(
                     prompt=types.ModelInput.from_ints(ptoks),
                     num_samples=GROUP_SIZE,
                     sampling_params=types.SamplingParams(
                         max_tokens=MAX_TOKENS, temperature=1.0
                     ),
-                )
+                ).coroutine()
                 for ptoks in prompt_toks
             ]
         )
@@ -185,23 +184,20 @@ async def main() -> None:
         # these are all of the API calls to Tinker!
         if data:
             # forward pass to compute the loss, backward pass to compute the gradients and store them
-            fb = await train.forward_backward_async(data, loss_fn="importance_sampling")
+            fb = train.forward_backward(data, loss_fn="importance_sampling")
             # optimizer step to update the model weights using the gradients calculated in backwards pass
-            opt = await train.optim_step_async(
-                types.AdamParams(learning_rate=LEARNING_RATE)
-            )
+            opt = train.optim_step(types.AdamParams(learning_rate=LEARNING_RATE))
 
-            # above futures return once the operations are enqueued, but not yet finished
-            # we want to enqueue both at once and then await them here to improve pipelining efficiency.
+            # Both calls above only submit the work; Tinker runs them in order.
+            # Submitting both before awaiting either lets them share a clock cycle for better pipelining.
             # Learn more: https://tinker-docs.thinkingmachines.ai/tinker/under-the-hood/#clock-cycles
             await fb
             await opt
 
         name = f"lipogram-{step + 1:03d}"
-        save = await train.save_weights_for_sampler_async(
+        checkpoint = await train.save_weights_for_sampler(
             name=name, ttl_seconds=7 * 24 * 3600
         )
-        checkpoint = await save.result_async()
         path = checkpoint.path
 
         mean_reward = sum(step_rewards) / len(step_rewards)
@@ -220,10 +216,10 @@ async def main() -> None:
         )
         log_checkpoint(name, checkpoint, TRAINING_PROMPTS[0])
 
-    me = await service.create_sampling_client_async(model_path=path)
+    me = await service.create_sampling_client(model_path=path)
     log.info(f"saved {TRAINING_STEPS + 1} checkpoints, latest: {path}")
 
-    test = await me.sample_async(
+    test = await me.sample(
         prompt=types.ModelInput.from_ints(render(EVAL_PROMPT)),
         num_samples=1,
         sampling_params=types.SamplingParams(max_tokens=MAX_TOKENS, temperature=0.7),
@@ -267,7 +263,7 @@ class LlmJudge(Judge):
             ]
         )
         spans, parser = self.renderer.render_for_completion_with_effort(messages, 0.0)
-        result = await self.sampler.sample_async(
+        result = await self.sampler.sample(
             prompt=tml_tinker.token_spans_to_tinker_model_input(
                 cast(Sequence[tml_tinker.TokenSpanWrapper], spans)
             ),
@@ -313,9 +309,8 @@ def highlight_e(text: str) -> str:
 
 
 async def get_email() -> str | None:
-    service = tinker.ServiceClient()
-    rest_client = service.create_rest_client()
-    identity = await rest_client.whoami().result_async()
+    rest_client = tinker.RestClient()
+    identity = await rest_client.whoami()
     return identity.email
 
 
